@@ -1332,36 +1332,55 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 968px) {
+            /* Let the services section scroll vertically with natural spacing on mobile */
+            .services-pin-section {
+                height: auto !important;
+            }
             .services-sticky-wrapper {
-                flex-direction: column;
-                justify-content: center;
-                align-items: flex-start;
-                padding: 40px 24px;
+                position: relative !important;
+                height: auto !important;
+                padding: 80px 24px !important;
+                flex-direction: column !important;
+                backdrop-filter: none !important;
+                background: transparent !important;
             }
-
             .services-left-col {
-                width: 100%;
-                height: auto;
-                margin-bottom: 40px;
+                width: 100% !important;
+                height: auto !important;
+                margin-bottom: 32px !important;
+                position: relative !important;
             }
-
             .services-right-track-wrapper {
-                width: 100%;
-                padding-left: 0;
+                width: 100% !important;
+                padding-left: 0 !important;
+                overflow: visible !important;
             }
-
+            .services-horizontal-track {
+                flex-direction: column !important;
+                gap: 24px !important;
+                transform: none !important;
+            }
             .service-bento-card {
-                width: 300px;
-                height: 420px;
-                padding: 24px;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 380px !important;
+            }
+            
+            /* Clean up Case Studies and unfix sticky stack on small touch interfaces */
+            .case-card {
+                position: relative !important;
+                top: 0 !important;
+                height: 50vh !important;
+                margin-bottom: 24px !important;
+                transform: none !important;
+            }
+            .case-card:hover {
+                transform: none !important;
             }
 
+            /* Responsive Hero & Process Grids */
             .card-visual-header {
                 height: 140px;
-            }
-
-            .services-pin-section {
-                height: auto;
             }
 
             .process-grid {
@@ -1376,12 +1395,6 @@
                 grid-template-columns: 1fr 1fr;
             }
 
-            .case-card {
-                flex: 0 0 320px;
-                height: 420px;
-            }
-
-            /* Responsive Hero */
             .hero {
                 padding-top: 140px;
                 align-items: flex-start;
@@ -1438,31 +1451,71 @@
                 height: 30px;
             }
 
+            /* Hide the cramped horizontal navigation menu on mobile devices to preserve branding room */
             .nav-menu {
-                position: static;
-                transform: none;
-                left: auto;
-                gap: 16px;
-                padding: 8px 16px;
-            }
-
-            .nav-menu a {
-                font-size: 12px;
-            }
-
-            .hero-btn-group {
-                flex-direction: column;
-                align-items: stretch;
-                width: 100%;
-            }
-
-            .btn-primary,
-            .btn-secondary {
-                width: 100%;
+                display: none !important;
             }
 
             .scroll-indicator-group {
                 display: none;
+            }
+
+            .footer-panel {
+                grid-template-columns: 1fr !important; /* Stack columns neatly onto single lines */
+                gap: 32px !important;
+                padding: 40px 24px !important;
+            }
+
+            #idle-ambient-video,
+            #animation-canvas {
+                object-position: 63% center !important; /* Horizontally nudges the sculpture into a clear visual pocket */
+                scale: 1.1; /* Marginally scales the asset to make it prominent on tall screens */
+            }
+            
+            /* Soften the dark overlay filters on mobile so the orange color pops crisply */
+            .vignette-overlay {
+                background: radial-gradient(circle at center, transparent 40%, rgba(10, 10, 10, 0.5) 90%),
+                            linear-gradient(to top, rgba(10, 10, 10, 0.8) 0%, transparent 50%) !important;
+            }
+
+            .hero {
+                padding-top: 80px !important;
+                align-items: flex-start !important;
+            }
+            
+            .hero-content {
+                padding: 0 24px !important;
+                margin-top: 20px !important;
+            }
+
+            .hero-title {
+                font-size: 2.6rem !important; /* Slightly more compact font sizing */
+                line-height: 1.02 !important;
+                margin-bottom: 16px !important;
+                letter-spacing: -0.03em !important;
+            }
+
+            .hero-subtitle {
+                font-size: 0.95rem !important;
+                max-width: 90% !important;
+                margin-bottom: 28px !important;
+                line-height: 1.5 !important;
+            }
+
+            /* Stack buttons compactly with minimized padding gaps */
+            .hero-btn-group {
+                flex-direction: column !important;
+                gap: 12px !important;
+                width: 100% !important;
+                max-width: 280px !important; /* Prevents buttons from spanning too wide */
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 12px 24px !important; /* Tighter padding footprint */
+                font-size: 14px !important;
+                height: 48px !important;
+                width: 100% !important;
             }
         }
 
@@ -1472,13 +1525,8 @@
             }
 
             .footer-panel {
-                grid-template-columns: 1fr;
-                padding: 40px 24px;
-            }
-
-            .case-card {
-                flex: 0 0 280px;
-                height: 380px;
+                grid-template-columns: 1fr !important;
+                padding: 40px 24px !important;
             }
 
             .process-card {
@@ -2053,51 +2101,43 @@
         const track = document.querySelector(".services-horizontal-track");
         const pinSection = document.querySelector(".services-pin-section");
 
-        gsap.to(track, {
-            x: () => {
-                const wrapper = document.querySelector(".services-right-track-wrapper");
-                const wrapperWidth = wrapper ? wrapper.offsetWidth : window.innerWidth * 0.7;
-                return -(track.scrollWidth - wrapperWidth);
-            },
-            ease: "none",
-            scrollTrigger: {
-                trigger: pinSection,
-                start: "top top",      // Pins the moment the section hits the top of the browser viewport
-                end: () => {
-                    const wrapper = document.querySelector(".services-right-track-wrapper");
-                    const wrapperWidth = wrapper ? wrapper.offsetWidth : window.innerWidth * 0.7;
-                    return `+=${track.scrollWidth - wrapperWidth}`;
-                },
-                pin: true,             // Locks vertical movement completely
-                scrub: 1,              // Smoothly maps translation tracking directly to user's wheel
-                invalidateOnRefresh: true
-            }
-        });
+        // Initialize GSAP responsive breakpoint manager
+        let mm = gsap.matchMedia();
 
-        // Clear any previous horizontal scroll triggers first
-        ScrollTrigger.getAll().forEach(trigger => {
-            if (trigger.vars.trigger === ".case-studies") trigger.kill();
-        });
+        // DESKTOP ONLY ANIMATIONS (Screens wider than 968px)
+        mm.add("(min-width: 969px)", () => {
+            // Place the entire horizontal bento track pinning animation inside here
+            gsap.to(track, {
+                x: () => -(track.scrollWidth - document.querySelector(".services-right-track-wrapper").offsetWidth),
+                ease: "none",
+                scrollTrigger: {
+                    trigger: pinSection,
+                    start: "top top",
+                    end: () => `+=${track.scrollWidth - document.querySelector(".services-right-track-wrapper").offsetWidth}`,
+                    pin: true,
+                    scrub: 1,
+                    invalidateOnRefresh: true
+                }
+            });
 
-        // Implement Stacking Logic for each card
-        const cards = gsap.utils.toArray(".case-card");
-
-        cards.forEach((card, index) => {
-            // We animate all cards except the last one out of view, or subtly scale down the lower cards
-            if (index < cards.length - 1) {
-                gsap.to(card, {
-                    scale: 0.93 - (cards.length - 1 - index) * 0.02, // Subtle scale down as next cards overlay
-                    opacity: 0.4, // Slight fade out to emphasize depth
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 10vh", // Starts animating when card becomes sticky
-                        endTrigger: ".case-studies",
-                        end: "bottom bottom",
-                        scrub: true,
-                        invalidateOnRefresh: true
-                    }
-                });
-            }
+            // Place the case cards sticky depth stacking loop inside here
+            const cards = gsap.utils.toArray(".case-card");
+            cards.forEach((card, index) => {
+                if (index < cards.length - 1) {
+                    gsap.to(card, {
+                        scale: 0.93 - (cards.length - 1 - index) * 0.02,
+                        opacity: 0.4,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 10vh",
+                            endTrigger: ".case-studies",
+                            end: "bottom bottom",
+                            scrub: true,
+                            invalidateOnRefresh: true
+                        }
+                    });
+                }
+            });
         });
 
         // Process cards reveal
