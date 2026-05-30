@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncShot</title>
+    <link rel="icon" type="image/png" href="asset/logo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+    <link
+        href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600,500,400,300&f[]=satoshi@900,700,500,400,300&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --radius: 24px;
+            --radius-sm: 16px;
+            --bg-dark: #0a0a0a;
+            --bg-card: rgba(255, 255, 255, 0.06);
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent-blue: #7EC8E3;
+            --accent-orange: #FF6B35;
+            --accent-purple: #A78BFA;
+            --accent-green: #34D399;
+        }
+
+        html {
+            background: var(--bg-dark);
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            scroll-behavior: contain;
+        }
+
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        /* ===== TYPOGRAPHY BASE SYSTEM ===== */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .section-title,
+        .footer-cta-title {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 600;
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .section-desc {
+            font-family: 'Satoshi', sans-serif;
+            font-size: clamp(1rem, 1.2vw, 1.25rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+        }
+
+        .section-eyebrow {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 16px;
+        }
+
+        /* Noise texture overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* ===== HEADER / NAVBAR ===== */
+        .header {
+            position: fixed;
+            top: 24px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 40px;
+        }
+
+        .header-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand-logo {
+            height: 38px;
+            width: auto;
+            display: block;
+        }
+
+        .nav-menu {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 100px;
+            padding: 10px 30px;
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-menu a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--text-primary);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            padding-top: 100px;
+        }
+
+        .hero-bg {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .hero-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 70% center;
+            z-index: -1;
+        }
+
+        #idle-ambient-video {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            object-position: 70% center;
+            z-index: -1;
+            /* Placed cleanly right over the canvas */
+            pointer-events: none;
+            will-change: opacity;
+        }
+
+        #animation-canvas {
+            z-index: -2;
+            /* Sits directly underneath the video */
+        }
+
+        .vignette-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(10, 10, 10, 0.4) 80%),
+                linear-gradient(to right, rgba(10, 10, 10, 0.7) 0%, rgba(10, 10, 10, 0.2) 60%, rgba(10, 10, 10, 0.6) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .volumetric-lights {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 85% -15%, rgba(255, 230, 200, 0.18) 0%, transparent 60%),
+                linear-gradient(135deg, rgba(255, 180, 100, 0.06) 0%, transparent 45%);
+            z-index: -1;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            will-change: transform, opacity;
+            opacity: 0.95;
+            animation: light-pulse 14s infinite ease-in-out;
+        }
+
+        @keyframes light-pulse {
+
+            0%,
+            100% {
+                opacity: 0.8;
+                transform: scale(1) translate3d(0, 0, 0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.02) translate3d(2px, 2px, 0);
+            }
+        }
+
+        .volumetric-fog {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            /* Wider to allow scrolling/drifting bounds */
+            height: 60%;
+            background:
+                linear-gradient(to top, rgba(10, 12, 10, 0.3) 0%, transparent 100%),
+                radial-gradient(ellipse at 30% 90%, rgba(255, 180, 100, 0.04) 0%, transparent 65%);
+            z-index: -1;
+            pointer-events: none;
+            filter: blur(40px);
+            will-change: transform;
+            opacity: 0.7;
+            animation: fog-drift 75s infinite ease-in-out;
+        }
+
+        @keyframes fog-drift {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate3d(-15%, -8px, 0) scale(1.05);
+            }
+        }
+
+        .floating-particles {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* Sunlit Dust - Diagonal downward current */
+        .particle.dust-particle {
+            animation: float-dust infinite ease-in-out;
+        }
+
+        @keyframes float-dust {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate3d(-40px, 50px, 0) rotate(180deg);
+            }
+        }
+
+        /* Forest Spores - Thermal circular drift */
+        .particle.spore-particle {
+            animation: float-spore infinite ease-in-out;
+        }
+
+        @keyframes float-spore {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate3d(60px, -45px, 0) scale(1.08);
+            }
+
+            66% {
+                transform: translate3d(-30px, 35px, 0) scale(0.92);
+            }
+        }
+
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: left;
+            padding: 0 40px;
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-text-block {
+            max-width: 780px;
+        }
+
+        .hero-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: clamp(4.5rem, 8vw, 7.5rem);
+            /* 90px to 120px on desktops */
+            font-weight: 600;
+            line-height: 0.95;
+            /* Super tight line height */
+            letter-spacing: -0.04em;
+            /* Ultra tight letter spacing */
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(30px);
+            text-align: left;
+        }
+
+        .hero-title span {
+            display: block;
+        }
+
+        .hero-title .line-1 {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hero-title .line-2 {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .hero-title .line-3 {
+            font-weight: 600;
+            color: var(--text-primary);
+            display: inline-block;
+        }
+
+        .hero-title .highlight-orange {
+            display: inline;
+            color: var(--accent-orange);
+        }
+
+        .hero-subtitle {
+            font-family: 'Satoshi', sans-serif;
+            font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+            font-weight: 400;
+            color: var(--text-secondary);
+            max-width: 580px;
+            margin: 0 0 40px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+            text-align: left;
+        }
+
+        .hero-btn-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .btn-primary {
+            font-family: 'Satoshi', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 36px;
+            background: #ffffff;
+            color: #000000;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 100px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: #f0f0f0;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-arrow svg {
+            stroke: #000000;
+        }
+
+        .btn-primary:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        .btn-secondary {
+            font-family: 'Satoshi', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 36px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 100px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ===== BOTTOM CORNER SCROLL INDICATOR ===== */
+        .scroll-indicator-group {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .scroll-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.05em;
+        }
+
+        .scroll-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .scroll-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(2px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== TRUST BAR ===== */
+        .trust-bar {
+            position: relative;
+            z-index: 3;
+            margin-top: -120px;
+            padding: 0 24px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .trust-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .trust-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .trust-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .trust-logo svg {
+            width: 24px;
+            height: 24px;
+            opacity: 0.5;
+        }
+
+        /* ===== SERVICES SECTION OVERHAUL ===== */
+        .services-pin-section {
+            position: relative;
+            width: 100%;
+            height: auto;
+            /* Let ScrollTrigger handle the scroll runway dynamically */
+            background: transparent;
+            /* Frosted glass overlay needs transparent background */
+            color: #ffffff;
+            overflow: visible;
+        }
+
+        .services-sticky-wrapper {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            padding: 0 8%;
+            box-sizing: border-box;
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .services-left-col {
+            width: 30%;
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.85);
+            /* Solid dark plate to block incoming cards */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+        }
+
+        .services-main-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 600;
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+            margin: 0 0 20px 0;
+            color: #ffffff;
+        }
+
+        .about-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            margin-bottom: auto;
+        }
+
+        .about-pill-btn:hover {
+            background: #ffffff;
+            color: #111111;
+            border-color: #ffffff;
+        }
+
+        .about-pill-btn .arrow {
+            margin-left: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .services-subtext-bottom {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+            max-width: 260px;
+            margin: 40px 0 0 0;
+        }
+
+        .carousel-arrows {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .carousel-arrows button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            color: #ffffff;
+        }
+
+        .carousel-arrows button:hover {
+            border-color: #ffffff;
+            background: #ffffff;
+            color: #111111;
+        }
+
+        .services-right-track-wrapper {
+            width: 70%;
+            overflow: hidden;
+            padding-left: 50px;
+            /* Gives initial spacing before cards move */
+            position: relative;
+            z-index: 1;
+            /* Sits beneath the left column */
+        }
+
+        .services-horizontal-track {
+            display: flex;
+            gap: 32px;
+            will-change: transform;
+        }
+
+        .service-bento-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02) !important;
+            backdrop-filter: blur(25px) saturate(120%);
+            -webkit-backdrop-filter: blur(25px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff;
+            border-radius: 24px;
+            padding: 32px;
+            width: 380px;
+            height: 480px;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 0 1px rgba(0, 0, 0, 0.1) !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+            /* Clips the dynamic shine overlay */
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: border-color 0.5s ease, box-shadow 0.5s ease !important;
+        }
+
+        .service-bento-card:hover {
+            border-color: rgba(255, 107, 53, 0.35) !important;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 107, 53, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        }
+
+        /* Dynamic Specular Shine Overlay */
+        .card-glass-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            background: radial-gradient(circle 250px at 50% 50%, rgba(255, 255, 255, 0.04), transparent 80%);
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            mix-blend-mode: overlay;
+        }
+
+        .service-bento-card:hover .card-glass-shine {
+            opacity: 1;
+        }
+
+        .card-visual-header {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            transform: translate3d(0, 0, 30px);
+            transform-style: preserve-3d;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .card-visual-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .service-bento-card:hover .card-visual-header img {
+            transform: scale(1.05);
+        }
+
+        .service-bento-card .card-body {
+            transform-style: preserve-3d;
+        }
+
+        .service-bento-card .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 12px 0;
+            line-height: 1.25;
+            letter-spacing: -0.02em;
+            transform: translate3d(0, 0, 25px);
+        }
+
+        .service-bento-card .card-divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.15);
+            margin-bottom: 16px;
+            transform: translate3d(0, 0, 15px);
+        }
+
+        .service-bento-card .card-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.55;
+            margin: 0;
+            font-weight: 400;
+            transform: translate3d(0, 0, 10px);
+        }
+
+        .service-bento-card .card-footer {
+            transform-style: preserve-3d;
+            transform: translate3d(0, 0, 20px);
+            margin-top: auto;
+            align-self: flex-start;
+        }
+
+        .service-bento-card .card-footer-icon {
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        /* ===== CASE STUDIES ===== */
+        .case-studies {
+            padding: 120px 0;
+            overflow: visible;
+            /* Allow sticky cards to scroll and stack properly */
+        }
+
+        .case-header {
+            padding: 0 24px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .case-scroll-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        .case-card {
+            position: sticky;
+            top: 10vh;
+            /* Lock distance from top */
+            margin-bottom: 5vh;
+            /* Breathing room between cards as they stack */
+            width: 100%;
+            max-width: 1100px;
+            height: 70vh;
+            /* Height for clean overlap */
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform 0.4s ease;
+            opacity: 1;
+            /* Fully visible for natural stack scroll */
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .case-card:hover {
+            transform: scale(1.02);
+        }
+
+        .case-card:nth-child(1) {
+            z-index: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .case-card:nth-child(2) {
+            z-index: 2;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .case-card:nth-child(3) {
+            z-index: 3;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .case-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center top;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 0;
+        }
+
+        .case-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.3) 50%, rgba(10, 10, 10, 0.4) 100%);
+            z-index: 1;
+        }
+
+        .case-card:hover .case-bg {
+            transform: scale(1.06);
+        }
+
+        .case-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 40px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            z-index: 2;
+        }
+
+        .case-tag {
+            font-family: 'Satoshi', sans-serif;
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .case-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .case-desc {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .view-project-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 100px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0;
+            /* Hidden by default, reveals beautifully on hover */
+            z-index: 2;
+        }
+
+        .case-card:hover .view-project-btn {
+            opacity: 1;
+            bottom: 35px;
+            background: #ffffff;
+            color: #0a0a0a;
+        }
+
+        /* ===== PROCESS SECTION ===== */
+        .process {
+            padding: 120px 24px;
+            position: relative;
+        }
+
+        .process-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 50%, rgba(126, 200, 227, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(255, 107, 53, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .process-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .process-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 48px;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .process-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .process-card.wide {
+            grid-column: span 2;
+        }
+
+        .process-number {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .process-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .process-desc {
+            font-family: 'Satoshi', sans-serif;
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+        }
+
+        .process-accent {
+            display: inline-block;
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            margin-bottom: 24px;
+        }
+
+        .process-card:nth-child(1) .process-accent {
+            background: var(--accent-blue);
+        }
+
+        .process-card:nth-child(2) .process-accent {
+            background: var(--accent-orange);
+        }
+
+        .process-card:nth-child(3) .process-accent {
+            background: var(--accent-purple);
+        }
+
+        .process-card:nth-child(4) .process-accent {
+            background: var(--accent-green);
+        }
+
+        /* ===== FOOTER CTA ===== */
+        .footer-cta {
+            padding: 220px 24px 140px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-cta-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 50%, rgba(255, 107, 53, 0.16) 0%, rgba(10, 10, 10, 0.4) 40%, transparent 80%),
+                radial-gradient(circle at 50% 30%, rgba(255, 230, 200, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(10px);
+        }
+
+        .footer-cta-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-cta-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: clamp(3.5rem, 9vw, 8.5rem);
+            font-weight: 700;
+            line-height: 0.92;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(40px);
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-cta-title .line-1 {
+            color: #ffffff;
+        }
+
+        .footer-cta-title .line-2 {
+            background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-cta-title .line-3 {
+            color: var(--accent-orange);
+            text-shadow: 0 0 40px rgba(255, 107, 53, 0.3);
+        }
+
+        .footer-cta-subtitle {
+            font-family: 'Satoshi', sans-serif;
+            font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+            color: rgba(255, 255, 255, 0.65);
+            max-width: 600px;
+            line-height: 1.6;
+            margin: 0 auto 48px;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .footer-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 48px;
+            background: #ffffff;
+            color: #0a0a0a !important;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 100px;
+            text-decoration: none;
+            border: 1px solid #ffffff;
+            box-shadow:
+                0 0 20px rgba(255, 107, 53, 0.2),
+                0 4px 30px rgba(0, 0, 0, 0.3);
+            transition:
+                background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            opacity: 0;
+            transform: translateY(20px);
+            will-change: transform, box-shadow;
+        }
+
+        .footer-cta-btn .btn-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .footer-cta-btn:hover {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #ffffff !important;
+            box-shadow:
+                0 0 35px rgba(255, 107, 53, 0.5),
+                0 10px 40px rgba(255, 107, 53, 0.2);
+            transform: translateY(-4px) scale(1.02);
+        }
+
+        .footer-cta-btn:hover .btn-arrow {
+            transform: translateX(6px);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 80px 24px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 60px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .footer-brand {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand span {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-tagline {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 300px;
+        }
+
+        .footer-col-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 14px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 968px) {
+            .services-sticky-wrapper {
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 40px 24px;
+            }
+
+            .services-left-col {
+                width: 100%;
+                height: auto;
+                margin-bottom: 40px;
+            }
+
+            .services-right-track-wrapper {
+                width: 100%;
+                padding-left: 0;
+            }
+
+            .service-bento-card {
+                width: 300px;
+                height: 420px;
+                padding: 24px;
+            }
+
+            .card-visual-header {
+                height: 140px;
+            }
+
+            .services-pin-section {
+                height: auto;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-card.wide {
+                grid-column: span 1;
+            }
+
+            .footer-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .case-card {
+                flex: 0 0 320px;
+                height: 420px;
+            }
+
+            /* Responsive Hero */
+            .hero {
+                padding-top: 140px;
+                align-items: flex-start;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                padding: 0 32px;
+                gap: 24px;
+            }
+
+            .hero-visual-spacer {
+                display: none;
+            }
+
+            .hero-text-block {
+                max-width: 100%;
+            }
+
+            .hero-video {
+                object-position: center center;
+            }
+
+            .hero-title {
+                font-size: clamp(2.5rem, 8vw, 4.5rem);
+                margin-bottom: 24px;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+                max-width: 100%;
+                margin-bottom: 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 24px;
+                top: 16px;
+            }
+
+            .header-container {
+                position: relative;
+                flex-direction: row;
+                justify-content: space-between;
+                height: 60px;
+            }
+
+            .logo {
+                z-index: 10;
+            }
+
+            .brand-logo {
+                height: 30px;
+            }
+
+            .nav-menu {
+                position: static;
+                transform: none;
+                left: auto;
+                gap: 16px;
+                padding: 8px 16px;
+            }
+
+            .nav-menu a {
+                font-size: 12px;
+            }
+
+            .hero-btn-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .scroll-indicator-group {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .trust-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-panel {
+                grid-template-columns: 1fr;
+                padding: 40px 24px;
+            }
+
+            .case-card {
+                flex: 0 0 280px;
+                height: 380px;
+            }
+
+            .process-card {
+                padding: 32px 24px;
+            }
+        }
+
+        /* Floating animation for hero elements */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* ===== PREMIUM CUSTOM SIGNATURE CURSOR ===== */
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-orange);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate3d(-50%, -50%, 0);
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.8), 0 0 30px rgba(255, 107, 53, 0.4);
+            transition:
+                width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, width, height, box-shadow;
+            display: none;
+            /* Hidden on mobile/touch, enabled on desktop via JS */
+        }
+
+        /* Show custom cursor only when body has active class (detected desktop hover) */
+        body.has-custom-cursor {
+            cursor: none;
+        }
+
+        body.has-custom-cursor a,
+        body.has-custom-cursor button,
+        body.has-custom-cursor .service-bento-card,
+        body.has-custom-cursor .case-card,
+        body.has-custom-cursor input,
+        body.has-custom-cursor textarea {
+            cursor: none;
+        }
+
+        /* CTA Hover State - Expanding Ring */
+        #custom-cursor.cta-hover {
+            width: 24px;
+            height: 24px;
+            background-color: transparent;
+            border: 1.5px solid var(--accent-orange);
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.6), inset 0 0 8px rgba(255, 107, 53, 0.2);
+        }
+
+        /* General Button Hover State - Soft White Glow */
+        #custom-cursor.btn-hover {
+            width: 12px;
+            height: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Enable 3D transitions for glass cards */
+        .service-bento-card,
+        .case-card {
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s ease, border-color 0.5s ease !important;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Smooth transforms for buttons */
+        .btn-primary,
+        .btn-secondary,
+        .about-pill-btn,
+        .carousel-arrows button,
+        .scroll-btn,
+        .nav-menu a {
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s ease, box-shadow 0.3s ease !important;
+            will-change: transform;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="custom-cursor"></div>
+
+    <div class="noise-overlay"></div>
+
+    <!-- ===== STICKY TOP NAVIGATION BAR ===== -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="asset/logo.png" alt="SyncShot Logo" class="brand-logo">
+            </div>
+            <nav class="nav-menu">
+                <a href="#services">Services</a>
+                <a href="#work">Work</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== BACKGROUND CANVAS WRAPPER ===== -->
+    <div class="hero-bg">
+        <video id="idle-ambient-video" autoplay muted loop playsinline>
+            <source src="asset/video/idle-ambient.mp4" type="video/mp4">
+        </video>
+        <canvas id="animation-canvas" class="hero-video"></canvas>
+        <div class="volumetric-lights"></div>
+        <div class="volumetric-fog"></div>
+        <div class="floating-particles"></div>
+        <div class="vignette-overlay"></div>
+    </div>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero">
+        <div class="hero-grid"></div>
+
+        <div class="hero-content">
+            <div class="hero-text-block">
+                <h1 class="hero-title">
+                    <span class="line-1">WHERE</span>
+                    <span class="line-2">IDEAS BECOME</span>
+                    <span class="line-3">SYSTEMS</span>
+                </h1>
+                <p class="hero-subtitle">We transform ambitious ideas into high-performance digital experiences,
+                    products, and systems built for scale.</p>
+                <div class="hero-btn-group">
+                    <a href="#contact" class="btn-primary">
+                        Get Started
+                        <span class="btn-arrow">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </span>
+                    </a>
+                    <a href="#services" class="btn-secondary">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            <!-- Visual spacer for center-right video placement -->
+            <div class="hero-visual-spacer"></div>
+        </div>
+
+        <!-- ===== BOTTOM CORNER SCROLL INDICATOR ===== -->
+        <div class="scroll-indicator-group">
+            <span class="scroll-label">Scroll down</span>
+            <a href="#services" class="scroll-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== SERVICES SECTION OVERHAUL ===== -->
+    <section class="services-pin-section" id="services">
+        <div class="services-sticky-wrapper">
+            <div class="services-left-col">
+                <h2 class="services-main-title">What We Do ↴</h2>
+                <a href="#about" class="about-pill-btn">About Us <span class="arrow">↗</span></a>
+                <p class="services-subtext-bottom">Design, Develop And Run Any Business Software You Need.</p>
+                <div class="carousel-arrows">
+                    <button class="arrow-left">←</button>
+                    <button class="arrow-right">→</button>
+                </div>
+            </div>
+
+            <div class="services-right-track-wrapper">
+                <div class="services-horizontal-track">
+                    <div class="service-bento-card">
+                        <div class="card-visual-header">
+                            <img src="asset/blue_3d_cubes.png" alt="Building Your Business Your Way">
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">Building Your Business Your Way</h3>
+                            <div class="card-divider"></div>
+                            <p class="card-desc">A comprehensive suite of tools that helps businesses optimize and grow
+                                by providing insights into user behavior, managing and tracking marketing campaigns, and
+                                streamlining project management.</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-footer-icon">⚙️</div>
+                        </div>
+                    </div>
+                    <div class="service-bento-card plain-text">
+                        <div class="card-body">
+                            <h3 class="card-title">Optimize Marketing Efforts</h3>
+                            <div class="card-divider"></div>
+                            <p class="card-desc">Better understand customers, optimize marketing efforts, and manage
+                                projects and campaigns more efficiently, leading to improved results and growth.</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-footer-icon">📊</div>
+                        </div>
+                    </div>
+                    <div class="service-bento-card plain-text">
+                        <div class="card-body">
+                            <h3 class="card-title">Turn Your Ideas Into Apps Visually</h3>
+                            <div class="card-divider"></div>
+                            <p class="card-desc">Install and customize solutions from our extensive collection of
+                                application templates to meet your unique requirements. Easily connect your custom
+                                applications with other tools.</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-footer-icon">💻</div>
+                        </div>
+                    </div>
+                    <div class="service-bento-card plain-text">
+                        <div class="card-body">
+                            <h3 class="card-title">Improve System Architecture</h3>
+                            <div class="card-divider"></div>
+                            <p class="card-desc">Scalable infrastructure design that grows seamlessly with your
+                                business, guaranteeing high-performance, robust security, and zero downtime under heavy
+                                load.</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-footer-icon">🔧</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CASE STUDIES ===== -->
+    <section class="case-studies" id="work">
+        <div class="case-header">
+            <div>
+                <div class="section-eyebrow">Selected Work</div>
+                <h2 class="section-title">Case Studies</h2>
+            </div>
+            <p class="section-desc" style="max-width: 400px; text-align: right;">Scroll down to explore our recent
+                projects for fast-growing companies.</p>
+        </div>
+
+        <div class="case-scroll-container">
+            <a href="https://tea-villa-cafe.vercel.app/" target="_blank" class="case-card">
+                <div class="case-bg" style="background-image: url('asset/thumbnail/tea villa cafe.png');"></div>
+                <div class="case-content">
+                    <div class="case-tag">Restaurant & Cafe</div>
+                    <h3 class="case-title">Tea Villa Cafe</h3>
+                    <p class="case-desc">A premium digital menu and online reservation experience.</p>
+                </div>
+                <div class="view-project-btn">View Project ↗</div>
+            </a>
+            <a href="https://boutique-shop-ten.vercel.app/" target="_blank" class="case-card">
+                <div class="case-bg" style="background-image: url('asset/thumbnail/rufes fashions.png');"></div>
+                <div class="case-content">
+                    <div class="case-tag">Fashion Store & Boutique</div>
+                    <h3 class="case-title">Rufes Fashions</h3>
+                    <p class="case-desc">An elegant, high-conversion e-commerce platform for modern apparel.</p>
+                </div>
+                <div class="view-project-btn">View Project ↗</div>
+            </a>
+            <a href="https://gridiantechnologies.com/" target="_blank" class="case-card">
+                <div class="case-bg" style="background-image: url('asset/thumbnail/gridian technologies.png');"></div>
+                <div class="case-content">
+                    <div class="case-tag">Tech Agency & Consulting</div>
+                    <h3 class="case-title">Gridian Technologies</h3>
+                    <p class="case-desc">A modern, high-performance platform for software consulting and enterprise
+                        solutions.</p>
+                </div>
+                <div class="view-project-btn">View Project ↗</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== PROCESS SECTION ===== -->
+    <section class="process" id="about">
+        <div class="process-bg"></div>
+        <div class="process-container">
+            <div class="section-header" style="margin-bottom: 60px;">
+                <div class="section-eyebrow">How it works</div>
+                <h2 class="section-title">Our Process</h2>
+                <p class="section-desc">A refined methodology that delivers consistent, high-quality results.</p>
+            </div>
+
+            <div class="process-grid">
+                <div class="process-card">
+                    <div class="process-accent"></div>
+                    <div class="process-number">01</div>
+                    <h3 class="process-title">Discovery & Strategy</h3>
+                    <p class="process-desc">We immerse ourselves in your business, analyzing market position, user
+                        needs, and technical requirements to build a strategic foundation.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-accent"></div>
+                    <div class="process-number">02</div>
+                    <h3 class="process-title">Design & Prototype</h3>
+                    <p class="process-desc">Rapid iteration through wireframes, high-fidelity mockups, and interactive
+                        prototypes validated with real user feedback.</p>
+                </div>
+                <div class="process-card wide">
+                    <div class="process-accent"></div>
+                    <div class="process-number">03</div>
+                    <h3 class="process-title">Build & Deploy</h3>
+                    <p class="process-desc">Clean, maintainable code with automated testing, CI/CD pipelines, and
+                        zero-downtime deployments. We ship fast without breaking things.</p>
+                </div>
+                <div class="process-card wide">
+                    <div class="process-accent"></div>
+                    <div class="process-number">04</div>
+                    <h3 class="process-title">Optimize & Scale</h3>
+                    <p class="process-desc">Continuous monitoring, A/B testing, and performance tuning to ensure your
+                        platform grows as fast as your business demands.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER CTA ===== -->
+    <section class="footer-cta" id="contact">
+        <div class="footer-cta-bg"></div>
+        <div class="footer-cta-content">
+            <h2 class="footer-cta-title">
+                <span class="line-1">THE FUTURE</span>
+                <span class="line-2">DOESN'T BUILD</span>
+                <span class="line-3">ITSELF.</span>
+            </h2>
+            <p class="footer-cta-subtitle">Let's build high-performance systems together. Reach out to transform your
+                vision into reality.</p>
+            <a href="mailto:hello@syncshot.io" class="footer-cta-btn">
+                Start your project
+                <span class="btn-arrow">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="footer-panel">
+            <div>
+                <div class="footer-brand">Sync<span>Shot</span></div>
+                <p class="footer-tagline">Web as a Service for fast-growing businesses. We build, you scale.</p>
+            </div>
+            
+            <div>
+                <div class="footer-col-title">Services</div>
+                <ul class="footer-links">
+                    <li><a href="#services">Web Development</a></li>
+                    <li><a href="#services">Marketing Optimization</a></li>
+                    <li><a href="#services">Visual App Architecture</a></li>
+                    <li><a href="#services">System Scaling</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <div class="footer-col-title">Navigation</div>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#services">What We Do</a></li>
+                    <li><a href="#work">Case Studies</a></li>
+                    <li><a href="#about">Our Process</a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <div class="footer-col-title">Connect</div>
+                <ul class="footer-links">
+                    <li><a href="https://www.instagram.com/syncshot.web/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></li>
+                    <li><a href="https://www.linkedin.com/in/syncshot" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li>
+                    <li><a href="mailto:hello@syncshot.edits.com">Email Us ↗</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 SyncShot. All rights reserved.</span>
+            <span>Built with precision.</span>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 1. Initialize Lenis Smooth Scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Smooth exponential deceleration
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smoothWaveform: true,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Connect Lenis to GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. High-Performance Frame Sequence Canvas Engine
+        gsap.registerPlugin(ScrollTrigger);
+
+        const canvas = document.getElementById("animation-canvas");
+        const context = canvas.getContext("2d");
+
+        // Force internal canvas drawing dimensions to match user's device screen resolution
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const frameCount = 192; // Total extracted frames from local high-quality MP4
+
+        // CORRECTED FILE PATH FOR INSTANT FETCHING
+        const currentFrame = index => (
+            `asset/frame/ezgif-frame-${String(index).padStart(3, '0')}.jpg`
+        );
+
+        // Populate image cache array
+        const images = [];
+        const airbnbSequence = { frame: 1 };
+
+        let loadedImagesCount = 0;
+
+        // Loop strictly starts at frame 1 and tracks precisely to frame 192
+        for (let i = 1; i <= frameCount; i++) {
+            const img = new Image();
+            img.onload = () => {
+                loadedImagesCount++;
+                if (loadedImagesCount === frameCount) {
+                    initScrollAnimation();
+                }
+                if (i === 1) {
+                    render();
+                }
+            };
+            img.src = currentFrame(i);
+            // Fallback for immediate cache hit loading
+            if (img.complete && i === 1) {
+                render();
+            }
+            images.push(img);
+        }
+
+        function render() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            const img = images[airbnbSequence.frame - 1];
+            if (!img) return;
+
+            // High-quality image smoothing configuration
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = "high";
+
+            // Scale image maintaining aspect ratio cover bounds
+            const imgRatio = img.width / img.height;
+            const canvasRatio = canvas.width / canvas.height;
+            let dWidth, dHeight, dx, dy;
+
+            if (canvasRatio > imgRatio) {
+                dWidth = canvas.width;
+                dHeight = canvas.width / imgRatio;
+                dx = 0;
+                dy = (canvas.height - dHeight) / 2;
+            } else {
+                dWidth = canvas.height * imgRatio;
+                dHeight = canvas.height;
+                dx = (canvas.width - dWidth) / 2;
+                dy = 0;
+            }
+
+            context.drawImage(img, dx, dy, dWidth, dHeight);
+        }
+
+        function initScrollAnimation() {
+            gsap.to(airbnbSequence, {
+                frame: frameCount,
+                snap: "frame", // Locks translation changes to strict whole integer frames
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.3, // Pulls frames instantly with a tiny 0.3s glide deceleration for maximum responsiveness
+                    anticipatePin: 1,
+                },
+                onUpdate: render
+            });
+        }
+
+        // Adjust canvas boundaries on browser scaling events
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            render();
+        });
+
+        // Generate realistic depth particles (Cinematic Sunlit Dust & Forest Spores)
+        const particlesContainer = document.querySelector(".floating-particles");
+        if (particlesContainer) {
+            particlesContainer.innerHTML = ""; // Clear any default placeholders
+            const particleCount = 35;
+
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement("div");
+                const isDust = i < 20; // 20 Sunlit Dust particles, 15 Forest Spores
+
+                p.className = `particle ${isDust ? "dust-particle" : "spore-particle"}`;
+
+                if (isDust) {
+                    // Dust particles: tiny (2px - 6px), sharp, golden
+                    const size = Math.random() * 4 + 2;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+                    p.style.background = Math.random() > 0.5 ? "rgba(255, 235, 190, 0.4)" : "rgba(255, 255, 255, 0.25)";
+                    p.style.filter = `blur(${size * 0.1}px)`;
+                    p.style.opacity = Math.random() * 0.35 + 0.15;
+                    p.style.animationDuration = `${Math.random() * 20 + 20}s`;
+                } else {
+                    // Spores: larger (10px - 28px), heavily blurred, warm green/orange
+                    const size = Math.random() * 18 + 10;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+                    p.style.background = Math.random() > 0.6 ? "rgba(160, 230, 150, 0.18)" : "rgba(255, 130, 40, 0.22)";
+                    p.style.filter = `blur(${size * 0.25}px)`;
+                    p.style.opacity = Math.random() * 0.25 + 0.05;
+                    p.style.animationDuration = `${Math.random() * 25 + 25}s`;
+                }
+
+                p.style.left = `${Math.random() * 100}%`;
+                p.style.top = `${Math.random() * 100}%`;
+                p.style.animationDelay = `${Math.random() * -30}s`;
+
+                particlesContainer.appendChild(p);
+            }
+        }
+
+        // Hero entrance animations
+        const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+        heroTl
+            .to(".hero-title", { opacity: 1, y: 0, duration: 1 }, 0.2)
+            .to(".hero-subtitle", { opacity: 1, y: 0, duration: 0.8 }, 0.4)
+            .to(".hero-btn-group", { opacity: 1, y: 0, duration: 0.8 }, 0.6);
+
+        // Services horizontal track scroll pinning
+        const track = document.querySelector(".services-horizontal-track");
+        const pinSection = document.querySelector(".services-pin-section");
+
+        gsap.to(track, {
+            x: () => {
+                const wrapper = document.querySelector(".services-right-track-wrapper");
+                const wrapperWidth = wrapper ? wrapper.offsetWidth : window.innerWidth * 0.7;
+                return -(track.scrollWidth - wrapperWidth);
+            },
+            ease: "none",
+            scrollTrigger: {
+                trigger: pinSection,
+                start: "top top",      // Pins the moment the section hits the top of the browser viewport
+                end: () => {
+                    const wrapper = document.querySelector(".services-right-track-wrapper");
+                    const wrapperWidth = wrapper ? wrapper.offsetWidth : window.innerWidth * 0.7;
+                    return `+=${track.scrollWidth - wrapperWidth}`;
+                },
+                pin: true,             // Locks vertical movement completely
+                scrub: 1,              // Smoothly maps translation tracking directly to user's wheel
+                invalidateOnRefresh: true
+            }
+        });
+
+        // Clear any previous horizontal scroll triggers first
+        ScrollTrigger.getAll().forEach(trigger => {
+            if (trigger.vars.trigger === ".case-studies") trigger.kill();
+        });
+
+        // Implement Stacking Logic for each card
+        const cards = gsap.utils.toArray(".case-card");
+
+        cards.forEach((card, index) => {
+            // We animate all cards except the last one out of view, or subtly scale down the lower cards
+            if (index < cards.length - 1) {
+                gsap.to(card, {
+                    scale: 0.93 - (cards.length - 1 - index) * 0.02, // Subtle scale down as next cards overlay
+                    opacity: 0.4, // Slight fade out to emphasize depth
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 10vh", // Starts animating when card becomes sticky
+                        endTrigger: ".case-studies",
+                        end: "bottom bottom",
+                        scrub: true,
+                        invalidateOnRefresh: true
+                    }
+                });
+            }
+        });
+
+        // Process cards reveal
+        gsap.to(".process-card", {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".process-grid",
+                start: "top 80%",
+                toggleActions: "play none none reverse"
+            }
+        });
+
+        // Coordinated Staggered Footer CTA Timeline
+        const footerCtaTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".footer-cta",
+                start: "top 75%",
+                toggleActions: "play none none reverse"
+            }
+        });
+
+        footerCtaTl
+            .to(".footer-cta-title", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" })
+            .to(".footer-cta-subtitle", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.6")
+            .to(".footer-cta-btn", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.4");
+
+        // Footer panel
+        gsap.to(".footer-panel", {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: ".footer",
+                start: "top 85%",
+                toggleActions: "play none none reverse"
+            }
+        });
+
+        // ===== MULTI-LAYERED MOVEMENT ENGINE (PARALLAX & DEPTH EFFECT) =====
+
+        // Layer 1: Foreground content (text & buttons) moves moderately downwards and fades slowly
+        gsap.to(".hero-content", {
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 120,
+            opacity: 0.25,
+            ease: "none"
+        });
+
+        // Layer 2: Background forest canvas moves slower, creating an epic physical depth effect
+        gsap.to("#animation-canvas", {
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 50,
+            scale: 1.05,
+            ease: "none"
+        });
+
+        // Layer 3: Atmospheric volumetric light layer shifts angles, simulating active sunlight diffusion
+        gsap.to(".volumetric-lights", {
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: 180,
+            scale: 1.1,
+            opacity: 0.1,
+            ease: "none"
+        });
+
+        // Layer 4: Close foreground floating pollen particles glide rapidly, exaggerating depth of field
+        gsap.to(".floating-particles", {
+            scrollTrigger: {
+                trigger: ".hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            },
+            y: -100,
+            scale: 1.15,
+            opacity: 0,
+            ease: "none"
+        });
+
+        // Smooth scroll for anchor links using Lenis
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    lenis.scrollTo(target);
+                }
+            });
+        });
+
+        // ===== PREMIUM CUSTOM SIGNATURE CURSOR ENGINE =====
+        const cursor = document.getElementById('custom-cursor');
+        let cursorX = 0, cursorY = 0;
+        let targetX = 0, targetY = 0;
+        const damping = 0.15; // Smooth luxury speed response
+
+        // Detect mousemove to activate cursor and track coordinates
+        window.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+
+            if (!document.body.classList.contains('has-custom-cursor')) {
+                document.body.classList.add('has-custom-cursor');
+                cursor.style.display = 'block';
+                // Snap initially to avoid sliding in from (0,0)
+                cursorX = targetX;
+                cursorY = targetY;
+            }
+        });
+
+        // Hide custom cursor on mouseout of window boundaries (e.g. going to address bar)
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '1';
+        });
+
+        // Decoupled RequestAnimationFrame loop for GPU rendering
+        function updateCursor() {
+            if (document.body.classList.contains('has-custom-cursor')) {
+                cursorX += (targetX - cursorX) * damping;
+                cursorY += (targetY - cursorY) * damping;
+                cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+            }
+            requestAnimationFrame(updateCursor);
+        }
+        requestAnimationFrame(updateCursor);
+
+        // ===== GENERALIZED BUTTON MAGNETISM AND CURSOR HOVERS =====
+        const magneticElements = document.querySelectorAll(
+            '.btn-primary, .btn-secondary, .about-pill-btn, .carousel-arrows button, .scroll-btn, .nav-menu a, .footer-cta-btn'
+        );
+
+        magneticElements.forEach(el => {
+            // Apply mouse hover styles to cursor
+            el.addEventListener('mouseenter', () => {
+                if (el.classList.contains('btn-primary') || el.classList.contains('footer-cta-btn')) {
+                    cursor.classList.add('cta-hover');
+                } else {
+                    cursor.classList.add('btn-hover');
+                }
+            });
+
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                // Horizontal offset from element center
+                const x = (e.clientX - (rect.left + rect.width / 2)) * 0.35;
+                // Vertical offset from element center
+                const y = (e.clientY - (rect.top + rect.height / 2)) * 0.35;
+
+                // Set the transformation with 3D hardware acceleration and slight scale
+                el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.05)`;
+            });
+
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('btn-hover', 'cta-hover');
+                el.style.transform = '';
+            });
+        });
+
+        // ===== PHYSICAL GLASS BENTO CARD ENGINE =====
+        const bentoCards = document.querySelectorAll('.service-bento-card');
+
+        // Inject specular shine layers programmatically to keep HTML clean
+        bentoCards.forEach(card => {
+            const shine = document.createElement('div');
+            shine.className = 'card-glass-shine';
+            card.appendChild(shine);
+        });
+
+        // Initialize state tracking array for bento cards
+        const cardStates = Array.from(bentoCards).map((card, idx) => ({
+            element: card,
+            shine: card.querySelector('.card-glass-shine'),
+            currentX: 0, currentY: 0,
+            targetX: 0, targetY: 0,
+            currentScale: 1, targetScale: 1,
+            currentElevate: 0, targetElevate: 0,
+            phaseOffset: idx * 1.25 // Smooth staggered float offsets
+        }));
+
+        cardStates.forEach(state => {
+            state.element.addEventListener('mousemove', (e) => {
+                const rect = state.element.getBoundingClientRect();
+                const offsetX = e.clientX - rect.left;
+                const offsetY = e.clientY - rect.top;
+
+                // Real-time CSS specular shine reflection spot positioning
+                if (state.shine) {
+                    state.shine.style.background = `radial-gradient(circle 250px at ${offsetX}px ${offsetY}px, rgba(255, 255, 255, 0.08), transparent 80%)`;
+                }
+
+                // Normalize offsets from center (-0.5 to 0.5)
+                const normX = (offsetX / rect.width) - 0.5;
+                const normY = (offsetY / rect.height) - 0.5;
+
+                // Elegant, non-exaggerated 12-degree rotation bounds
+                state.targetX = normX * 12;
+                state.targetY = -normY * 12;
+                state.targetScale = 1.02;
+                state.targetElevate = -8; // Elevate card slightly on hover
+            });
+
+            state.element.addEventListener('mouseleave', () => {
+                state.targetX = 0;
+                state.targetY = 0;
+                state.targetScale = 1;
+                state.targetElevate = 0;
+            });
+        });
+
+        // Unified frame loop driving bento cards animations (Slow Float + 3D Tilt + Elevate Lerp)
+        function updatePhysicalCards() {
+            const time = Date.now() * 0.0015;
+
+            cardStates.forEach(state => {
+                // Smoothly interpolate values (lerp factor 0.1)
+                state.currentX += (state.targetX - state.currentX) * 0.1;
+                state.currentY += (state.targetY - state.currentY) * 0.1;
+                state.currentScale += (state.targetScale - state.currentScale) * 0.1;
+                state.currentElevate += (state.targetElevate - state.currentElevate) * 0.1;
+
+                // Slow ambient background floating translation (sinusoidal)
+                const waveY = Math.sin(time + state.phaseOffset) * 6;
+                const finalElevate = waveY + state.currentElevate;
+
+                // Compile combined 3D translation & rotation vectors
+                state.element.style.transform = `perspective(1000px) translate3d(0, ${finalElevate}px, 0) rotateX(${state.currentY}deg) rotateY(${state.currentX}deg) scale3d(${state.currentScale}, ${state.currentScale}, 1)`;
+            });
+
+            requestAnimationFrame(updatePhysicalCards);
+        }
+        requestAnimationFrame(updatePhysicalCards);
+
+        // ===== CASE CARDS STANDARD 3D TILT INTERACTION =====
+        const caseCards = document.querySelectorAll('.case-card');
+        caseCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const offsetX = e.clientX - rect.left;
+                const offsetY = e.clientY - rect.top;
+
+                const normX = (offsetX / rect.width) - 0.5;
+                const normY = (offsetY / rect.height) - 0.5;
+
+                const rotateX = -normY * 12;
+                const rotateY = normX * 12;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02) translateY(-4px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateY(0px)';
+            });
+        });
+
+        // Fades out the moving ambient video within the first 150 pixels of scrolling down
+        gsap.to("#idle-ambient-video", {
+            opacity: 0,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "top -150",
+                scrub: true,
+                invalidateOnRefresh: true
+            }
+        });
+    </script>
+</body>
+
+</html>
