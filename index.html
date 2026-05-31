@@ -1332,10 +1332,15 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 968px) {
+
             /* Let the services section scroll vertically with natural spacing on mobile */
             .services-pin-section {
                 height: auto !important;
+                background-color: #0a0a0a !important;
+                position: relative !important;
+                z-index: 5 !important;
             }
+
             .services-sticky-wrapper {
                 position: relative !important;
                 height: auto !important;
@@ -1344,28 +1349,32 @@
                 backdrop-filter: none !important;
                 background: transparent !important;
             }
+
             .services-left-col {
                 width: 100% !important;
                 height: auto !important;
                 margin-bottom: 32px !important;
                 position: relative !important;
             }
+
             .services-right-track-wrapper {
                 width: 100% !important;
                 padding-left: 0 !important;
                 overflow: visible !important;
             }
+
             .services-horizontal-track {
                 flex-direction: column !important;
                 gap: 24px !important;
                 transform: none !important;
             }
+
             .service-bento-card {
                 width: 100% !important;
                 height: auto !important;
                 min-height: 380px !important;
             }
-            
+
             /* Clean up Case Studies and unfix sticky stack on small touch interfaces */
             .case-card {
                 position: relative !important;
@@ -1374,6 +1383,7 @@
                 margin-bottom: 24px !important;
                 transform: none !important;
             }
+
             .case-card:hover {
                 transform: none !important;
             }
@@ -1428,6 +1438,35 @@
                 max-width: 100%;
                 margin-bottom: 32px;
             }
+
+            /* Change from fixed to absolute so it rolls away naturally on scroll */
+            .hero-bg {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+                /* Keep it strictly contained to the initial viewport height */
+                z-index: -2 !important;
+            }
+
+            #idle-ambient-video,
+            #animation-canvas {
+                object-fit: cover !important;
+                object-position: 65% center !important;
+                /* Elegant centering for portrait screens */
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Ensure all subsequent sections have solid dark backgrounds so they overlap beautifully */
+            .case-studies,
+            .process,
+            .footer-cta {
+                background-color: #0a0a0a !important;
+                position: relative !important;
+                z-index: 5 !important;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1461,61 +1500,59 @@
             }
 
             .footer-panel {
-                grid-template-columns: 1fr !important; /* Stack columns neatly onto single lines */
+                grid-template-columns: 1fr !important;
+                /* Stack columns neatly onto single lines */
                 gap: 32px !important;
                 padding: 40px 24px !important;
             }
 
             #idle-ambient-video,
             #animation-canvas {
-                object-position: 63% center !important; /* Horizontally nudges the sculpture into a clear visual pocket */
-                scale: 1.1; /* Marginally scales the asset to make it prominent on tall screens */
+                object-position: 63% center !important;
+                /* Horizontally nudges the sculpture into a clear visual pocket */
+                scale: 1.1;
+                /* Marginally scales the asset to make it prominent on tall screens */
             }
-            
+
             /* Soften the dark overlay filters on mobile so the orange color pops crisply */
             .vignette-overlay {
                 background: radial-gradient(circle at center, transparent 40%, rgba(10, 10, 10, 0.5) 90%),
-                            linear-gradient(to top, rgba(10, 10, 10, 0.8) 0%, transparent 50%) !important;
+                    linear-gradient(to top, rgba(10, 10, 10, 0.8) 0%, transparent 50%) !important;
             }
 
             .hero {
                 padding-top: 80px !important;
                 align-items: flex-start !important;
             }
-            
+
             .hero-content {
                 padding: 0 24px !important;
                 margin-top: 20px !important;
             }
 
             .hero-title {
-                font-size: 2.6rem !important; /* Slightly more compact font sizing */
-                line-height: 1.02 !important;
+                font-size: 2.8rem !important;
+                line-height: 1.05 !important;
                 margin-bottom: 16px !important;
-                letter-spacing: -0.03em !important;
             }
 
             .hero-subtitle {
-                font-size: 0.95rem !important;
-                max-width: 90% !important;
-                margin-bottom: 28px !important;
-                line-height: 1.5 !important;
+                font-size: 1rem !important;
+                margin-bottom: 32px !important;
             }
 
-            /* Stack buttons compactly with minimized padding gaps */
             .hero-btn-group {
                 flex-direction: column !important;
-                gap: 12px !important;
                 width: 100% !important;
-                max-width: 280px !important; /* Prevents buttons from spanning too wide */
+                max-width: 280px !important;
+                gap: 12px !important;
             }
 
             .btn-primary,
             .btn-secondary {
-                padding: 12px 24px !important; /* Tighter padding footprint */
-                font-size: 14px !important;
-                height: 48px !important;
                 width: 100% !important;
+                padding: 14px 24px !important;
+                font-size: 14px !important;
             }
         }
 
@@ -1890,7 +1927,7 @@
                 <div class="footer-brand">Sync<span>Shot</span></div>
                 <p class="footer-tagline">Web as a Service for fast-growing businesses. We build, you scale.</p>
             </div>
-            
+
             <div>
                 <div class="footer-col-title">Services</div>
                 <ul class="footer-links">
@@ -1900,7 +1937,7 @@
                     <li><a href="#services">System Scaling</a></li>
                 </ul>
             </div>
-            
+
             <div>
                 <div class="footer-col-title">Navigation</div>
                 <ul class="footer-links">
@@ -1910,12 +1947,14 @@
                     <li><a href="#about">Our Process</a></li>
                 </ul>
             </div>
-            
+
             <div>
                 <div class="footer-col-title">Connect</div>
                 <ul class="footer-links">
-                    <li><a href="https://www.instagram.com/syncshot.web/" target="_blank" rel="noopener noreferrer">Instagram ↗</a></li>
-                    <li><a href="https://www.linkedin.com/in/syncshot" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></li>
+                    <li><a href="https://www.instagram.com/syncshot.web/" target="_blank"
+                            rel="noopener noreferrer">Instagram ↗</a></li>
+                    <li><a href="https://www.linkedin.com/in/syncshot" target="_blank"
+                            rel="noopener noreferrer">LinkedIn ↗</a></li>
                     <li><a href="mailto:hello@syncshot.edits.com">Email Us ↗</a></li>
                 </ul>
             </div>
@@ -2027,19 +2066,42 @@
         }
 
         function initScrollAnimation() {
-            gsap.to(airbnbSequence, {
-                frame: frameCount,
-                snap: "frame", // Locks translation changes to strict whole integer frames
-                ease: "none",
+            // Check if user is on mobile/tablet viewport
+            if (window.innerWidth <= 968) {
+                // Force canvas to stay statically crisp on Frame 1 and let the native idle loop video handle motion
+                airbnbSequence.frame = 1;
+                render();
+                return; // Exit completely to prevent GSAP from binding laggy mobile scroll triggers
+            }
+
+            // DESKTOP MASTER TIMELINE LOGIC (Keep exactly as is for widescreen desktop execution)
+            const masterScrollTl = gsap.timeline({
                 scrollTrigger: {
                     trigger: "body",
                     start: "top top",
                     end: "bottom bottom",
-                    scrub: 0.3, // Pulls frames instantly with a tiny 0.3s glide deceleration for maximum responsiveness
+                    scrub: 0.3,
                     anticipatePin: 1,
-                },
-                onUpdate: render
+                }
             });
+
+            masterScrollTl.to("#idle-ambient-video", {
+                opacity: 0,
+                duration: 1,
+                ease: "power1.inOut",
+                onUpdate: () => {
+                    airbnbSequence.frame = 1;
+                    render();
+                }
+            });
+
+            masterScrollTl.to(airbnbSequence, {
+                frame: frameCount,
+                snap: "frame",
+                ease: "none",
+                duration: 15,
+                onUpdate: render
+            }, ">");
         }
 
         // Adjust canvas boundaries on browser scaling events
